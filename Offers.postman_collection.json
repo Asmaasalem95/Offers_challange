@@ -1,0 +1,88 @@
+{
+	"id": "1e5362d2-6415-6d3d-aa73-2137e4f65039",
+	"name": "Offers",
+	"description": "",
+	"order": [
+		"9aa4b726-9f4d-1c97-89dd-fdb52f6ca7b6",
+		"70aca37d-e0a6-4d81-c609-2fe4f20e3c57"
+	],
+	"folders": [],
+	"timestamp": 1606053276844,
+	"owner": "",
+	"public": false,
+	"requests": [
+		{
+			"id": "70aca37d-e0a6-4d81-c609-2fe4f20e3c57",
+			"headers": "Accept: application/json\nContent-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Accept",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://localhost:8000/api/calculate-invoice",
+			"queryParams": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"preRequestScript": null,
+			"method": "POST",
+			"collectionId": "1e5362d2-6415-6d3d-aa73-2137e4f65039",
+			"data": [],
+			"dataMode": "raw",
+			"name": "calculate invoice with offer buy 2 tshirts get 10% off jacket",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1606058741714,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"rawModeData": "\n{\t\"currency_id\":1,\n\t\"products\":[\n\t\t {\"product_id\" : 1, \"offer_id\" : 1, \"quantity\" :1},\n\t\t {\"product_id\" : 2, \"offer_id\" :1,\"quantity\" :1},\n\t\t {\"product_id\" : 3, \"offer_id\" : 1, \"quantity\" :1}\n\t\t \n       ]\n}\n"
+		},
+		{
+			"id": "9aa4b726-9f4d-1c97-89dd-fdb52f6ca7b6",
+			"headers": "Accept: application/json\nContent-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Accept",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://localhost:8000/api/calculate-invoice",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1606058679807,
+			"name": "calculate invoice with offer get 10% discount",
+			"description": "product 5 has discount 10%",
+			"collectionId": "1e5362d2-6415-6d3d-aa73-2137e4f65039",
+			"responses": [],
+			"rawModeData": "\n{\t\"currency_id\":1,\n\t\"products\":[\n\t\t {\"product_id\" : 1, \"offer_id\" : 1, \"quantity\" :1},\n\t\t {\"product_id\" : 2, \"offer_id\" :1,\"quantity\" :1},\n\t\t {\"product_id\" : 3, \"offer_id\" : 1, \"quantity\" :1}\n\t\t \n       ]\n}\n"
+		}
+	]
+}
