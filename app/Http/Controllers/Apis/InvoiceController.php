@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Apis;
 
+use App\Http\Requests\generate_invoice_request;
 use App\Services\Contracts\InvoiceServiceInterface;
 use App\Services\Contracts\OfferServiceInterface;
 use App\Services\Contracts\ProductServiceInterface;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Response;
 
 
 class InvoiceController extends Controller
@@ -41,59 +42,70 @@ class InvoiceController extends Controller
         $this->invoiceService = $invoiceService;
     }
 
-    public function index(Request $request)
+    public function index(generate_invoice_request $request)
     {
 
         $invoice_items = [];
         $offersItems = [];
         //check on every product if has offer
-        foreach ($request->products as $item) {
-            //split products offers array
-            if (isset($item['offer_id'])) {
-                array_push($offersItems, $item);
-            }
-            // products which has no offer
-            else {
-                $price = $this->productService->calculateProductPrice($item, $request->currency_id);
-                array_push($invoice_items, [
-                    'product_id' => $item['product_id'],
-                    'quantity'=> $item['quantity'],
-                    'discount'=> 0,
-                    'discount_value' =>0,
-                    'currency_id' => $request->currency_id,
-                    'cost' => $price,
-                    'original_price'=>$price
-                ]);
-
-            }
-        }
-        //products with offers
-        $collection = $this->groupingOffersItems($offersItems);
-        foreach ($collection as $offerItems) {
-            $offer = $this->offerService->checkOfferEligibility($offerItems[0]['offer_id'], $offerItems);
-            if ($offer) {
-                //calculate product costs
-                foreach ($offerItems as $item) {
-                    $price = $this->productService->calculateProductPriceWithOffer($item, $request->currency_id);
-
+        try {
+            foreach ($request->products as $item) {
+                //split products offers array
+                if (isset($item['offer_id'])) {
+                    array_push($offersItems, $item);
+                } // products which has no offer
+                else {
+                    $price = $this->productService->calculateProductPrice($item, $request->currency_id);
                     array_push($invoice_items, [
                         'product_id' => $item['product_id'],
-                        'quantity'=> $item['quantity'],
+                        'quantity' => $item['quantity'],
+                        'discount' => 0,
+                        'discount_value' => 0,
                         'currency_id' => $request->currency_id,
-                        'original_price' =>$price['original'],
-                        'cost' => $price['final'],
-                        'discount_value' => $price['discount'],
-                        'discount' => $offer->discount_value
+                        'cost' => $price,
+                        'original_price' => $price
                     ]);
+
                 }
             }
+            //products with offers
+            $collection = $this->groupingOffersItems($offersItems);
+            foreach ($collection as $offerItems) {
+                $offer = $this->offerService->checkOfferEligibility($offerItems[0]['offer_id'], $offerItems);
+                if ($offer) {
+                    //calculate product costs
+                    foreach ($offerItems as $item) {
+                        $price = $this->productService->calculateProductPriceWithOffer($item, $request->currency_id);
+
+                        array_push($invoice_items, [
+                            'product_id' => $item['product_id'],
+                            'quantity' => $item['quantity'],
+                            'currency_id' => $request->currency_id,
+                            'original_price' => $price['original'],
+                            'cost' => $price['final'],
+                            'discount_value' => $price['discount'],
+                            'discount' => $offer->discount_value
+                        ]);
+                    }
+                }
+            }
+
+
+            //create invoice
+            $invoice = $this->invoiceService->calculateInvoice($invoice_items);
+            $created_invoice = $this->invoiceService->storeInvoice($invoice, $invoice_items);
+            return response()->json([
+                'status' => 'Success',
+                'response' => $this->print($created_invoice),
+            ])->setStatusCode(Response::HTTP_OK);
         }
-
-
-        //create invoice
-        $invoice = $this->invoiceService->calculateInvoice($invoice_items);
-        $created_invoice = $this->invoiceService->storeInvoice($invoice,$invoice_items);
-        return $this->print($created_invoice);
+        catch (\Exception $e)
+        {
+            return response()->json([
+                'status' => 'Error!',
+                'response' => $e->getMessage(),
+            ])->setStatusCode(Response::HTTP_BAD_REQUEST);
+        }
 
     }
 
