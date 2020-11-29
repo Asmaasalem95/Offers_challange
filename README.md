@@ -12,7 +12,7 @@ _Composer Dependency Manager https://getcomposer.org/download/
 
 ### Installation
 
-`git clone https://github.com/Asmaasalem95/blog`
+`git clone https://github.com/Asmaasalem95/Offers_challange`
 
 
 `composer install`
